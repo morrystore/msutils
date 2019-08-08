@@ -1,0 +1,29 @@
+package com.morrystore.utils;
+
+public class URLEncoder {
+
+    /**
+	 * URL编码时默认字符集
+	 */
+    public static final String DEFAULT_ENCODEING_CHARSET = "utf8";
+    
+
+    /**
+	 * 对url进行编码
+	 * @param url
+	 * @param encoding
+	 * @return
+	 */
+	public static String encode(String url,String encoding) {
+		if(Strings.isBlank(url)) {
+			return url;
+		}
+		url = URLEncoder.encode(url, "utf8").replaceAll("%3A", ":").replaceAll("%2F", "/").replaceAll("%2E", ".")
+                .replaceAll("\\+", "%20").replaceAll("%3F", "?").replaceAll("%3D", "=").replaceAll("%26", "&");
+		return url;
+    }
+    
+    public static String encode(String url) {
+		return encode(url, DEFAULT_ENCODEING_CHARSET);
+	}
+}
