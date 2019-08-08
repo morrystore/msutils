@@ -13,9 +13,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 多任务多线程运行器（框架）
+ * 多任务多线程运行器（框架） <br>
+ * 
+ * eg: <br>
+ * 
+ *  new MultiTaskRunner<ObjectToProcess>(new MyRunnerConfig()) <br>
+ *   .start("task name", 10)                      <br>
+ *   .join();
+ * 
+ * 
+ * @see RunnerConfig
  * 
  * @param <T>
+ * @author morry
+ * @since 0.1
  */
 public class MultiTaskRunner<T> {
 

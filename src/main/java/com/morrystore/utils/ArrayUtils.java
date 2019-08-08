@@ -19,6 +19,11 @@ public class ArrayUtils {
         return list == null || list.isEmpty();
     }
 
+    /**
+     * 判断集合是否不为空
+     * @param list
+     * @return
+     */
     public static boolean isNotEmpty(List<?> list) {
         return !isEmpty(list);
     }
@@ -32,6 +37,16 @@ public class ArrayUtils {
      */
     public static <T> boolean isEmpty(T[] array) {
         return array == null || array.length == 0;
+    }
+
+    /**
+     * 判断数组是否不为空
+     * @param <T>
+     * @param array
+     * @return
+     */
+    public static <T> boolean isNotEmpty(T[] array) {
+        return !isEmpty(array);
     }
 
 }
