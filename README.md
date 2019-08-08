@@ -1,5 +1,23 @@
-# msutils
-Java 常用开发工具
+### msutils
+
+类介绍
+
+# ArrayUtils
+* 方法 boolean isEmpty(List<?> list)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
