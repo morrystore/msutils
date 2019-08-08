@@ -1,4 +1,6 @@
-package com.morrystore.utils;
+package com.morrystore.utils.http;
+
+import com.morrystore.utils.Strings;
 
 public class URLEncoder {
 

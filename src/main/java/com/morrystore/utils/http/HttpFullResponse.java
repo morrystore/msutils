@@ -1,4 +1,4 @@
-package com.morrystore.utils;
+package com.morrystore.utils.http;
 
 
 import java.io.UnsupportedEncodingException;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
+import com.morrystore.utils.ArrayUtils;
 
 import org.apache.http.Header;
 import org.apache.http.StatusLine;

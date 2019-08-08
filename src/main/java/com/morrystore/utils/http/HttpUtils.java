@@ -1,4 +1,4 @@
-package com.morrystore.utils;
+package com.morrystore.utils.http;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
+import com.morrystore.utils.ThreadUtils;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
