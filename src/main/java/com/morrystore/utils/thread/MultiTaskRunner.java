@@ -6,6 +6,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.common.collect.Lists;
 import com.morrystore.utils.ArrayUtils;
 import com.morrystore.utils.ThreadUtils;
 
@@ -100,7 +101,8 @@ public class MultiTaskRunner<T> {
 
                         //由于在 hasData() 中已经取过一次数据,所以这里需要判断,避免重复取数据
                         if(ArrayUtils.isNotEmpty(dataCache)) {
-                            list = dataCache;
+                            list = Lists.newArrayList();
+                            list.addAll(dataCache);
                             // 清空临时缓存
                             dataCache.clear();
                         } else {
