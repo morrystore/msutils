@@ -112,9 +112,26 @@ public class HttpUtils {
 	 * @return
 	 */
 	public static String post(String address, Map<String,Object> params, String charset) {
+		HttpFullResponse response = postFull(address, params, charset);
+		byte[] buff = response.getBuff();
+		if (buff != null && buff.length > 0) {
+			try {
+				return new String(buff, charset);
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+		return "";
+	}
+
+
+
+	public static HttpFullResponse postFull(String address, Map<String,Object> params, String charset) {
 		address = URLEncoder.encode(address.trim());
 		HttpPost httpPost = new HttpPost(address);
 		headers.stream().forEach(header -> httpPost.addHeader(header));
+
+		HttpFullResponse result =  new HttpFullResponse();
 
 		if(params != null && !params.isEmpty()) {
 			List<NameValuePair> list = Lists.newArrayList();
@@ -133,8 +150,10 @@ public class HttpUtils {
 			response = httpClient.execute(httpPost);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
-				return EntityUtils.toString(entity, charset);
+				result.setBuff( EntityUtils.toByteArray(entity));
 			}
+			result.setHeaders(response.getAllHeaders());
+			result.setStatusLine(response.getStatusLine());
 		} catch (Exception e) {
 			logger.error("Error when get url [{}]: {}", address, e.getMessage());
 		} finally {
@@ -146,7 +165,7 @@ public class HttpUtils {
 				}
 			}
 		}
-		return null;
+		return result;
 	}
 
 	/**
