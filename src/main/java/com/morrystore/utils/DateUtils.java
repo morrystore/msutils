@@ -2,6 +2,10 @@ package com.morrystore.utils;
 
 import java.sql.Timestamp;
 
+/**
+ * @see DateTimeUtils
+ */
+@Deprecated
 public class DateUtils {
 
 	/**

@@ -13,5 +13,6 @@ public class StringsTest {
         String str = "bac";
         boolean result = Strings.containsChinese(str);
         Assert.assertEquals(false  , result);
+        System.out.println("abv");
     }
 }
