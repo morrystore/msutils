@@ -1,5 +1,7 @@
 package com.morrystore.utils.http;
 
+import java.io.UnsupportedEncodingException;
+
 import com.morrystore.utils.Strings;
 
 public class URLEncoder {
@@ -20,8 +22,13 @@ public class URLEncoder {
 		if(Strings.isBlank(url)) {
 			return url;
 		}
-		url = URLEncoder.encode(url, "utf8").replaceAll("%3A", ":").replaceAll("%2F", "/").replaceAll("%2E", ".")
-                .replaceAll("\\+", "%20").replaceAll("%3F", "?").replaceAll("%3D", "=").replaceAll("%26", "&");
+		try {
+			url = java.net.URLEncoder.encode(url, "utf8").replaceAll("%3A", ":").replaceAll("%2F", "/")
+					.replaceAll("%2E", ".").replaceAll("\\+", "%20").replaceAll("%3F", "?").replaceAll("%3D", "=")
+					.replaceAll("%26", "&");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		return url;
     }
     
