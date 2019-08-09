@@ -34,7 +34,7 @@ public class DateTimeUtils {
 	 * @return
 	 */
 	public static int month() {
-		return Calendar.getInstance().get(Calendar.MONTH);
+		return Calendar.getInstance().get(Calendar.MONTH) + 1;
 	}
 
 	/**
@@ -73,24 +73,48 @@ public class DateTimeUtils {
 		return Calendar.getInstance().get(Calendar.SECOND);
 	}
 
+	/**
+	 * 日期转换成字符串（不带时间）。 eg:  2019-09-01
+	 * @param delimeter 分隔符
+	 * @return
+	 */
 	public static String date2String(char delimeter) {
 		String pattern = "yyyy-MM-dd".replaceAll("-", String.valueOf(delimeter));
 		return new SimpleDateFormat(pattern).format(new Date());
 	}
 
+	/**
+	 * 日期转换成字符串（不带时间）。 eg:  2019-09-01
+	 * @return
+	 */
 	public static String date2String() {
-		return time2String(DEFAULT_DATE_DELIMETER);
+		return date2String(DEFAULT_DATE_DELIMETER);
 	}
 
+	/**
+	 * 时间转换成字符串（不带日期）。 eg:  23:59:59
+	 * @param delimeter 分隔符
+	 * @return
+	 */
 	public static String time2String(char delimeter) {
 		String pattern = "HH:mm:ss".replaceAll(":", String.valueOf(delimeter));
 		return new SimpleDateFormat(pattern).format(new Date());
 	}
 
+	/**
+	 * 时间转换成字符串（不带日期）。 eg:  23:59:59
+	 * @return
+	 */
 	public static String time2String() {
 		return time2String(DEFAULT_TIME_DELIMETER);
 	}
 
+	/**
+	 * 日期时间转换成字符串。eg: 2019-09-01 23:59:59
+	 * @param dateDelimeter 日期分隔符
+	 * @param timeDelimeter 时间分隔符
+	 * @return
+	 */
 	public static String asString(char dateDelimeter, char timeDelimeter) {
 		StringBuffer pattern = new StringBuffer();
 		pattern.append("yyyy").append(dateDelimeter).append("MM").append(dateDelimeter).append("dd")
@@ -98,6 +122,10 @@ public class DateTimeUtils {
 		return new SimpleDateFormat(pattern.toString()).format(new Date());
 	}
 
+	/**
+	 * 日期时间转换成字符串。eg: 2019-09-01 23:59:59
+	 * @return
+	 */
 	public static String asString() {
 		return asString(DEFAULT_DATE_DELIMETER, DEFAULT_TIME_DELIMETER);
 	}
