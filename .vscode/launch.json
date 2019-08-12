@@ -6,6 +6,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - MD5",
+            "request": "launch",
+            "mainClass": "com.morrystore.utils.encrypt.MD5",
+            "projectName": "msutils"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - AesEncrypt",
+            "request": "launch",
+            "mainClass": "com.morrystore.utils.encrypt.AesEncrypt",
+            "projectName": "msutils"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - AES",
+            "request": "launch",
+            "mainClass": "com.morrystore.utils.encrypt.AES",
+            "projectName": "msutils"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
