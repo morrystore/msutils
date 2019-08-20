@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - RandomUtils",
+            "request": "launch",
+            "mainClass": "com.morrystore.utils.RandomUtils",
+            "projectName": "msutils"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - MD5",
             "request": "launch",
             "mainClass": "com.morrystore.utils.encrypt.MD5",
