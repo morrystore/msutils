@@ -85,7 +85,24 @@ public class HttpUtils {
 		headers.add(defaultUserAgentHeader);
 	}
 
-	public static HttpFullResponse post(String address, Map<String,Object> params, String charset) {
+	/**
+	 * POST请求
+	 * @param address 请求地址
+	 * @param params 请求参数
+	 * @return 请求结果
+	 */
+	public static HttpFullResponse post(String address, Map<String,Object> params) {
+		return post(address, params);
+	}
+
+	/**
+	 * POST请求
+	 * @param address 请求地址
+	 * @param params  请求参数
+	 * @param proxy   使用代理
+	 * @return 请求结果
+	 */
+	public static HttpFullResponse post(String address, Map<String,Object> params, HttpProxy proxy) {
 		address = URLEncoder.encode(address.trim());
 		HttpPost httpPost = new HttpPost(address);
 		headers.stream().forEach(header -> httpPost.addHeader(header));
@@ -96,11 +113,17 @@ public class HttpUtils {
 			List<NameValuePair> list = Lists.newArrayList();
 			params.entrySet().stream().forEach(item -> list.add(new BasicNameValuePair(item.getKey(), String.valueOf(item.getValue()) ) ) );
 			try {
-				UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list, charset);
+				UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list, "utf-8");
 				httpPost.setEntity(entity);
 			} catch (UnsupportedEncodingException e) {
-				logger.error("Invalid charset name -> {}", charset);
+				logger.error("Invalid charset name -> {}", "utf-8");
 			}
+		}
+
+		if(proxy != null && proxy.getProxy() != null) {
+			httpPost.setConfig(RequestConfig.custom()
+					.setProxy(proxy.getProxy())
+					.build());
 		}
 
 		CloseableHttpResponse response = null;

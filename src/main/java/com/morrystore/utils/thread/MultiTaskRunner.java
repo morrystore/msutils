@@ -5,7 +5,9 @@ import com.morrystore.utils.common.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -47,15 +49,25 @@ public class MultiTaskRunner<T> {
     private List<T> dataCache = null;
 
     /**
+     * 启动一个多线程任务
+     * @param config
+     * @param name
+     * @param poolSize
+     * @param <T>
+     * @throws InterruptedException
+     */
+    public static <T> void start(RunnerConfig<T> config, String name, int poolSize) throws InterruptedException {
+        new MultiTaskRunner<T>(config).start(name, poolSize).join();
+    }
+
+    /**
      * 初始化框架<br/>
      * 
      * @see RunnerConfig
      * @param config 配置
      */
     public MultiTaskRunner(RunnerConfig<T> config) {
-        if(config == null) {
-            throw new IllegalArgumentException("The parameter config must not be null");
-        }
+        Optional.ofNullable(config).orElseThrow(() -> new IllegalArgumentException("The parameter config must not be null"));
         this.config = config;
     }
 
@@ -98,8 +110,7 @@ public class MultiTaskRunner<T> {
 
                         //由于在 hasData() 中已经取过一次数据,所以这里需要判断,避免重复取数据
                         if(Arrays.isNotEmpty(dataCache)) {
-                            list = Lists.newArrayList();
-                            list.addAll(dataCache);
+                            list = new ArrayList<>(dataCache);
                             // 清空临时缓存
                             dataCache.clear();
                         } else {
@@ -109,9 +120,7 @@ public class MultiTaskRunner<T> {
                         if (Arrays.isEmpty(list)) {
                             break;
                         } else {
-                            for (T item : list) {
-                                queue.offer(item);
-                            }
+                            list.forEach(item -> queue.offer(item));
                         }
                     } catch (Exception e) {
                         logger.info("Error when get next data : {}", e.getMessage());
@@ -124,7 +133,7 @@ public class MultiTaskRunner<T> {
             //停止所有任务
             stop();
 
-            logger.info("All tasks [{}] were completed.", name);
+            logger.info("Task [{}] was completed.", name);
         });
 
         //启动任务线程
