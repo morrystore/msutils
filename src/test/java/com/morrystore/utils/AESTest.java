@@ -5,6 +5,7 @@ package com.morrystore.utils;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.morrystore.utils.common.Jsons;
 import com.morrystore.utils.encrypt.AES;
 
 import org.junit.Test;
@@ -19,7 +20,7 @@ public class AESTest {
             Map<String,Object> params = Maps.newHashMap();
             params.put("post-data", "we");
             params.put("page-size", "10");
-            str = JsonUtils.toJson(params);
+            str = Jsons.toJson(params);
 
             String enString = AES.encrypt(str, key);
             System.out.println("source string : " + str);

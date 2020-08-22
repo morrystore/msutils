@@ -1,14 +1,14 @@
-package com.morrystore.utils;
+package com.morrystore.utils.common;
 
 import java.lang.reflect.Type;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class JsonUtils {
+public class Jsons {
 	private static Gson gson;
 
-	private JsonUtils() {
+	private Jsons() {
 	}
 
 	static {

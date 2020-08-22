@@ -1,12 +1,11 @@
 package com.morrystore.utils.encrypt;
 
+import com.google.common.base.Strings;
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import com.morrystore.utils.Strings;
-
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * sha1 工具
@@ -49,24 +48,10 @@ public class SHA {
      * @return sha1 value
      */
     public static String sha1(String target) {
-        if (Strings.isBlank(target)) {
+        if (Strings.isNullOrEmpty(target)) {
             return null;
         }
         return DigestUtils.sha1Hex(target);
     }
 
-    /**
-     * 比较文件的sha1值,验证是否被篡改
-     * 
-     * @param file      文件，不能为空
-     * @param sha1String sha1值，不能为空
-     * @return
-     */
-    public static boolean checkFileChanged(File file, String sha1String) {
-        String sha1 = sha1(file);
-        if (Strings.isEmpty(sha1) || Strings.isEmpty(sha1String)) {
-            return false;
-        }
-        return sha1.equalsIgnoreCase(sha1String);
-    }
 }

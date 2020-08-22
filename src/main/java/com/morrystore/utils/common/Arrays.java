@@ -1,4 +1,4 @@
-package com.morrystore.utils;
+package com.morrystore.utils.common;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import java.util.List;
  * 
  * @author morry store
  */
-public class ArrayUtils {
+public class Arrays {
 
     /**
      * 判断集合是否为空

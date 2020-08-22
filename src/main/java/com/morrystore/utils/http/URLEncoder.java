@@ -1,8 +1,8 @@
 package com.morrystore.utils.http;
 
-import java.io.UnsupportedEncodingException;
+import com.google.common.base.Strings;
 
-import com.morrystore.utils.Strings;
+import java.io.UnsupportedEncodingException;
 
 public class URLEncoder {
 
@@ -10,7 +10,6 @@ public class URLEncoder {
 	 * URL编码时默认字符集
 	 */
     public static final String DEFAULT_ENCODEING_CHARSET = "utf8";
-    
 
     /**
 	 * 对url进行编码
@@ -18,8 +17,8 @@ public class URLEncoder {
 	 * @param encoding
 	 * @return
 	 */
-	public static String encode(String url,String encoding) {
-		if(Strings.isBlank(url)) {
+	public static String encode(String url, String encoding) {
+		if(Strings.isNullOrEmpty(url)) {
 			return url;
 		}
 		try {

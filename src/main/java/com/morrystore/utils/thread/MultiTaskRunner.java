@@ -1,17 +1,15 @@
 package com.morrystore.utils.thread;
 
+import com.google.common.collect.Lists;
+import com.morrystore.utils.common.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.google.common.collect.Lists;
-import com.morrystore.utils.ArrayUtils;
-import com.morrystore.utils.ThreadUtils;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 多任务多线程运行器（框架） <br>
@@ -75,7 +73,6 @@ public class MultiTaskRunner<T> {
         try {
             if (!hasData()) {
                 logger.info("Data not found for -> {}", name);
-
                 return this;
             }
         } catch (Exception e1) {
@@ -93,14 +90,14 @@ public class MultiTaskRunner<T> {
                 if (!running) {
                     break;
                 }
-                ThreadUtils.sleep(config.pullThreadSleepTime());
+                Threads.sleep(config.pullThreadSleepTime());
                 if (queue.isEmpty()) {
                     try {
 
                         List<T> list = null;
 
                         //由于在 hasData() 中已经取过一次数据,所以这里需要判断,避免重复取数据
-                        if(ArrayUtils.isNotEmpty(dataCache)) {
+                        if(Arrays.isNotEmpty(dataCache)) {
                             list = Lists.newArrayList();
                             list.addAll(dataCache);
                             // 清空临时缓存
@@ -109,7 +106,7 @@ public class MultiTaskRunner<T> {
                             list = this.config.next();
                         }
 
-                        if (ArrayUtils.isEmpty(list)) {
+                        if (Arrays.isEmpty(list)) {
                             break;
                         } else {
                             for (T item : list) {
@@ -127,7 +124,7 @@ public class MultiTaskRunner<T> {
             //停止所有任务
             stop();
 
-            logger.info("Download [{}] was completed.", name);
+            logger.info("All tasks [{}] were completed.", name);
         });
 
         //启动任务线程
@@ -163,7 +160,7 @@ public class MultiTaskRunner<T> {
      */
     private boolean hasData() throws Exception {
         dataCache = this.config.next();
-        return ArrayUtils.isNotEmpty(dataCache);
+        return Arrays.isNotEmpty(dataCache);
     }
 
 
@@ -183,7 +180,7 @@ public class MultiTaskRunner<T> {
                         logger.error("Error in task : " ,e.getMessage() );
                     }
                 } else {
-                    ThreadUtils.sleep(config.taskThreadSleepTime());
+                    Threads.sleep(config.taskThreadSleepTime());
                 }
             }
             latch.countDown();

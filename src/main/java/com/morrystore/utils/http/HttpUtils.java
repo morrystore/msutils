@@ -1,14 +1,7 @@
 package com.morrystore.utils.http;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.collect.Lists;
-import com.morrystore.utils.ThreadUtils;
-
+import com.morrystore.utils.thread.Threads;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -34,6 +27,12 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 /**
  * HTTP 工具
  * 
@@ -55,7 +54,7 @@ public class HttpUtils {
 
 	private static List<Header> headers = Lists.newArrayList();
 	//默认的user-agent
-	private static Header userAgentHeader = new BasicHeader("User-Agent",
+	private static Header defaultUserAgentHeader = new BasicHeader("User-Agent",
 	"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.108 Safari/537.36"); 
 
 
@@ -67,9 +66,10 @@ public class HttpUtils {
 		try {
 			SSLContextBuilder builder = new SSLContextBuilder();
 			builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
 			Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-					.register("http", PlainConnectionSocketFactory.getSocketFactory()).register("https", sslsf).build();
+					.register("http", PlainConnectionSocketFactory.getSocketFactory())
+					.register("https", new SSLConnectionSocketFactory(builder.build()))
+					.build();
 			poolConnManager = new PoolingHttpClientConnectionManager(socketFactoryRegistry);
 			poolConnManager.setMaxTotal(MAX_CONNECTION);
 			poolConnManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
@@ -82,51 +82,10 @@ public class HttpUtils {
 			e.printStackTrace();
 		}
 
-		headers.add(userAgentHeader);
+		headers.add(defaultUserAgentHeader);
 	}
 
-	public static CloseableHttpClient getConnection() {
-
-		CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(poolConnManager)
-				.setDefaultRequestConfig(requestConfig).setRetryHandler(new DefaultHttpRequestRetryHandler(0, false))
-				.build();
-
-		if (poolConnManager != null && poolConnManager.getTotalStats() != null) {
-			System.out.println("now client pool " + poolConnManager.getTotalStats().toString());
-		}
-
-		return httpClient;
-	}
-
-	public static void printStats() {
-		if (poolConnManager != null && poolConnManager.getTotalStats() != null) {
-			System.out.println(">>> HTTP client pool " + poolConnManager.getTotalStats().toString());
-		}
-	}
-
-	/**
-	 * POST 请求
-	 * @param address 请求地址
-	 * @param params 请求参数 
-	 * @param charset 参数和返回值的字符类型
-	 * @return
-	 */
-	public static String post(String address, Map<String,Object> params, String charset) {
-		HttpFullResponse response = postFull(address, params, charset);
-		byte[] buff = response.getBuff();
-		if (buff != null && buff.length > 0) {
-			try {
-				return new String(buff, charset);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-		}
-		return "";
-	}
-
-
-
-	public static HttpFullResponse postFull(String address, Map<String,Object> params, String charset) {
+	public static HttpFullResponse post(String address, Map<String,Object> params, String charset) {
 		address = URLEncoder.encode(address.trim());
 		HttpPost httpPost = new HttpPost(address);
 		headers.stream().forEach(header -> httpPost.addHeader(header));
@@ -169,45 +128,13 @@ public class HttpUtils {
 	}
 
 	/**
-	 * 获取页面内容
-	 * @param url
-	 * @param charset
-	 * @return
-	 */
-	public static String getString(String url, String charset, Header... customHeaders) {
-		byte[] buff = get(url, customHeaders);
-		if (buff != null && buff.length > 0) {
-			try {
-				return new String(buff, charset);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-		}
-		return "";
-	}
-
-	/**
 	 * 向远程主机发送HTTP的GET请求
-	 * 
-	 * @param url    请求地址
-	 * @param params 请求参数
+	 * @param address  请求地址
+	 * @param proxy    使用代理
+	 * @param customHeaders 头部信息
 	 * @return 返回内容
-	 * @throws RpcException
 	 */
-	public static byte[] get(String address, Header... customHeaders) {
-		HttpFullResponse result = getFull(address, customHeaders);
-		return result.getBuff();
-	}
-
-
-	/**
-	 * 获取包括 Response Header 在内的所有信息
-	 * @param address
-	 * @param customHeaders
-	 * @return
-	 */
-	public static HttpFullResponse getFull(String address, Header... customHeaders) {
-
+	public static HttpFullResponse get(String address, HttpProxy proxy, Header... customHeaders) {
 		HttpFullResponse result =  new HttpFullResponse();
 
 		address = URLEncoder.encode(address.trim());
@@ -217,6 +144,12 @@ public class HttpUtils {
 		} else {
 			List<Header> hs =  Lists.newArrayList(customHeaders);
 			hs.stream().forEach(header -> httpGet.addHeader(header));
+		}
+
+		if(proxy != null && proxy.getProxy() != null) {
+			httpGet.setConfig(RequestConfig.custom()
+					.setProxy(proxy.getProxy())
+					.build());
 		}
 
 		CloseableHttpResponse response = null;
@@ -244,10 +177,21 @@ public class HttpUtils {
 	}
 
 
+	/**
+	 * 获取包括 Response Header 在内的所有信息
+	 * @param address
+	 * @param customHeaders
+	 * @return
+	 */
+	public static HttpFullResponse get(String address, Header... customHeaders) {
+		return get(address, null, customHeaders);
+	}
+
+
 	private static void runMonitor() {
 		Thread thread = new Thread(() -> {
 			while(true) {
-				ThreadUtils.sleep(5000);
+				Threads.sleep(5000);
 
 				poolConnManager.closeExpiredConnections();
 				// 选择关闭 空闲30秒的链接
@@ -256,5 +200,24 @@ public class HttpUtils {
 		});
 		thread.setDaemon(true);
 		thread.start();
+	}
+
+	private static CloseableHttpClient getConnection() {
+
+		CloseableHttpClient httpClient = HttpClients.custom().setConnectionManager(poolConnManager)
+				.setDefaultRequestConfig(requestConfig).setRetryHandler(new DefaultHttpRequestRetryHandler(0, false))
+				.build();
+
+		if (poolConnManager != null && poolConnManager.getTotalStats() != null) {
+			System.out.println("now client pool " + poolConnManager.getTotalStats().toString());
+		}
+
+		return httpClient;
+	}
+
+	private static void printStats() {
+		if (poolConnManager != null && poolConnManager.getTotalStats() != null) {
+			System.out.println(">>> HTTP client pool " + poolConnManager.getTotalStats().toString());
+		}
 	}
 }

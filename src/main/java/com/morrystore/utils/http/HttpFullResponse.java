@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
-import com.morrystore.utils.ArrayUtils;
+import com.morrystore.utils.common.Arrays;
 
 import org.apache.http.Header;
 import org.apache.http.StatusLine;
@@ -37,7 +37,6 @@ public class HttpFullResponse {
     }
 
     public Header getFirstHeader(String name) {
-        
         return Lists.newArrayList(headers).stream().filter(v -> v.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
     }
 
@@ -47,7 +46,7 @@ public class HttpFullResponse {
 
     public Header getLastHeader(String name) {
         List<Header> hs = getHeaders(name);
-        if(ArrayUtils.isEmpty(hs)) {
+        if(Arrays.isEmpty(hs)) {
             return null;
         } else {
             return hs.get(hs.size() - 1);
